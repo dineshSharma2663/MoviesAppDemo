@@ -1,0 +1,11 @@
+/* 
+  MovieStrings.strings
+  MoviesApp
+
+  Created by Dinesh Kumar on 14/01/24.
+  
+*/
+"moviesText" = "Movies";
+"imdbRating" = "IMDB Rating    ";
+"releaseYear" = "Release year    ";
+

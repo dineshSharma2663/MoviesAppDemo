@@ -1,0 +1,13 @@
+/* 
+  Localizable.strings
+  MoviesApp
+
+  Created by Dinesh Kumar on 13/01/24.
+  
+*/
+
+"loginText" = "Se connecter";
+"userNamePlaceholderText" = "Saisissez votre nom d'utilisateur";
+"passwordPlaceholderText" = "Entrer le mot de passe";
+"invalidEmailAlertMessage" = "Veuillez saisir une adresse e-mail valide.";
+"invalidPasswordAlertMessage" = "Le mot de passe doit comporter au moins six caractères.";
