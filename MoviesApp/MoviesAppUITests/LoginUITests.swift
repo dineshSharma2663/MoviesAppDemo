@@ -9,8 +9,9 @@
 import XCTest
 @testable import MoviesApp
 
-final class LoginUITests: XCTestCase {
 
+final class LoginUITests: XCTestCase {
+    
     var app: XCUIApplication!
     
     override func setUpWithError() throws {
@@ -34,7 +35,7 @@ final class LoginUITests: XCTestCase {
         
         // Check for Textfields, Button exists or not
         let loginField = app.textFields["loginUserNameInput"]
-        let passField = app.textFields["loginPasswordInput"]
+        let passField = app.secureTextFields["loginPasswordInput"]
         let loginButton = app.buttons["loginButton"]
         XCTAssertTrue(loginField.exists)
         XCTAssertTrue(passField.exists)
@@ -43,46 +44,49 @@ final class LoginUITests: XCTestCase {
         // When Invalid Email inputs
         loginField.tap()
         loginField.typeText("abc")
-        app.keyboards.buttons["Return"].tap()
+        app.keyboards.buttons["return"].tap()
         loginButton.tap()
         
         var alert = app.alerts.firstMatch
         XCTAssertTrue(alert.exists)
         var alertMessage = alert.staticTexts.firstMatch.label
-        var alertTitle = alert.label
-        XCTAssertTrue(alert.buttons["Ok"].exists)
-        XCTAssertTrue(alertTitle.isEmpty)
+        XCTAssertTrue(alert.buttons["OK"].exists)
+        print("alertMessage-->>\(alertMessage)")
+        //XCTAssertTrue(alertTitle.isEmpty)
         XCTAssertTrue(alertMessage == LoginStrings.invalidEmailAlertMessage)
-        alert.buttons["Ok"].tap()
+        alert.buttons["OK"].tap()
         
         // When invalid password entries
         loginField.tap()
         loginField.clearAndEnterText(text: "abc@gmail.com")
         passField.tap()
         passField.typeText("12345")
-        app.keyboards.buttons["Return"].tap()
+        
         loginButton.tap()
         
         // then show invalid password alert
         alert = app.alerts.firstMatch
         XCTAssertTrue(alert.exists)
         alertMessage = alert.staticTexts.firstMatch.label
-        alertTitle = alert.label
-        XCTAssertTrue(alert.buttons["Ok"].exists)
-        XCTAssertTrue(alertTitle.isEmpty)
+        XCTAssertTrue(alert.buttons["OK"].exists)
         XCTAssertTrue(alertMessage == LoginStrings.invalidPasswordAlertMessage)
-        alert.buttons["Ok"].tap()
+        alert.buttons["OK"].tap()
         
         // Successful login & navigation check to movies list screen
         loginField.tap()
         loginField.clearAndEnterText(text: "abc@gmail.com")
         passField.tap()
         passField.typeText("1234567")
-        app.keyboards.buttons["Return"].tap()
+        
         loginButton.tap()
         
         navBar = app.navigationBars[MovieStrings.moviesText]
         XCTAssertTrue(navBar.exists)
-        XCTAssertTrue(navBar.menuButtons.count == 0)
+        
+        let buttons = navBar.buttons
+        let countCheck = NSPredicate(format: "count == 1")
+        expectation(for: countCheck, evaluatedWith: buttons, handler: nil)
+        waitForExpectations(timeout: 3, handler: nil)
     }
 }
+

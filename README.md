@@ -1,7 +1,7 @@
 # MoviesAppDemo
 This mobile application illustrates below points
-• Mandatory Unit tests, minimum 80% coverage however the more the better. 
-• Snapshot & UI tests that will increase the chances.
+• Unit tests coverage 80%
+• Snapshot & UI tests
 • MVVM Design pattern
 • Modular code.
 • Readability
@@ -9,3 +9,7 @@ This mobile application illustrates below points
 • testability
 • scalability
 • simplicity
+
+FYI
+Whenever there is snapshot test failure, please tests in 15 pro device as screenshots are mapped for the same.
+

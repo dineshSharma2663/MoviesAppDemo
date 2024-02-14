@@ -12,14 +12,33 @@ enum HTTPMethods: String {
     case post = "POST"
 }
 
-typealias APIResponse = (Any?, Error?) -> Void
+typealias APIResponse = (Result<Any?, Error>) -> Void
 
-enum DataError: Error {
+enum NetworkClientError: Error {
     case invalidResponse
     case invalidURL
     case invalidData
     case network(Error?)
     case decoding(Error?)
+    
+    var errorDetails: NSError {
+        var localisedMessage: String = ""
+        switch self {
+        case .invalidResponse:
+            localisedMessage = "Response is invalid for this request."
+        case .invalidURL:
+            localisedMessage = "Request URL is invalid for this request."
+        case .invalidData:
+            localisedMessage = "Response Data is invalid for this request."
+        default:
+            localisedMessage  = "An error occurred. Please try after some time."
+        }
+        return NSError(domain: "AppTest", code: 0, userInfo: [NSLocalizedDescriptionKey: localisedMessage])
+    }
+    
+    static func setUpError(with message: String) -> NSError {
+        return NSError(domain: "AppTest", code: 0, userInfo: [NSLocalizedDescriptionKey: message])
+    }
 }
 
 final class APIManager {

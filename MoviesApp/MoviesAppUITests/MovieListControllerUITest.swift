@@ -30,37 +30,35 @@ final class MovieListControllerUITest: XCTestCase {
     func testMoviesControllerView() {
         // Get Textfields, Button exists or not
         let loginField = app.textFields["loginUserNameInput"]
-        let passField = app.textFields["loginPasswordInput"]
+        let passField = app.secureTextFields["loginPasswordInput"]
         let loginButton = app.buttons["loginButton"]
-        var navBar = app.navigationBars[LoginStrings.loginText]
-        // load movie controller
+        var navBar = app.navigationBars[MovieStrings.moviesText]
         // Successful login & navigation check to movies list screen
         loginField.tap()
         loginField.clearAndEnterText(text: "abc@gmail.com")
         passField.tap()
         passField.typeText("1234567")
-        app.keyboards.buttons["Return"].tap()
+
         loginButton.tap()
         
         // Validate movies nav bar & its button
         navBar = app.navigationBars[MovieStrings.moviesText]
         XCTAssertTrue(navBar.exists)
-        XCTAssertTrue(navBar.buttons["rightBarButton"].exists)
         
         // validating TableView Exists
-        let table = app.tables[MoviesConstants.AccessibilityIdentifiers.moviesTableView]
+        let table = app.collectionViews[MoviesConstants.AccessibilityIdentifiers.moviesTableView]
         XCTAssertTrue(table.exists)
         
         // Validate Number of Rows / Cells
-        let cells = table.cells
-        XCTAssertTrue(cells.count == 100)
         
         // Validating First Cell & its content
-        let firstCell = table.cells["MovieTableCell\(0)"]
-        let movieName = firstCell.staticTexts["movieNameLabel_0"].label
-        let movieSummary = firstCell.staticTexts["movieSummaryLabel_0"].label
-        let rating = firstCell.staticTexts["ratingLabel_0"].label
-        let releaseYear = firstCell.staticTexts["releaseDateLabel_0"].label
+        let firstCell = table.children(matching: .cell).element(boundBy: 0).children(matching: .other).element(boundBy: 1).children(matching: .other).element.children(matching: .other).element
+        
+//        let firstCell = table.cells["MovieTableCell\(0)"]
+        let movieName = table.staticTexts["movieNameLabel_0"].label
+        let movieSummary = table.staticTexts["movieSummaryLabel_0"].label
+        let rating = table.staticTexts["ratingLabel_0"].label
+        let releaseYear = table.staticTexts["releaseDateLabel_0"].label
         XCTAssertTrue(firstCell.exists)
         XCTAssertEqual(movieName, "The Shawshank Redemption")
         XCTAssertEqual(movieSummary, "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.")

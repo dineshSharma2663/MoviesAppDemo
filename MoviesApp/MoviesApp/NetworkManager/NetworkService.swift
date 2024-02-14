@@ -7,6 +7,13 @@
 
 import Foundation
 
+typealias NetworkCallBackParams = (data: Data?, response: URLResponse?, error: Error?)
+
+enum ServiceType: String {
+    case fetchMovies = "FetchMovies"
+    case getMovieDetails = "GetMovieDetails"
+}
+
 protocol NetworkService {
     var path: String { get }
     var baseURL: String { get }
@@ -14,25 +21,7 @@ protocol NetworkService {
     var method: HTTPMethods { get }
     var body: Encodable? { get }
     var headers: [String: String]? { get }
-    var defaultErrorHandling: Bool? { get set }
-    var responseHandler: ResponseHandlerProtocol? { get set }
+    var defaultErrorHandling: Bool { get }
     var decodingType: Decodable.Type? { get }
-}
-
-extension NetworkService {
-    var responseHandler: ResponseHandlerProtocol? {
-        get {
-            nil
-        } set {
-            responseHandler =  newValue
-        }
-    }
-    
-    var defaultErrorHandling: Bool? {
-        get {
-            true
-        } set {
-            defaultErrorHandling =  newValue
-        }
-    }
+    var serviceType: ServiceType { get }
 }

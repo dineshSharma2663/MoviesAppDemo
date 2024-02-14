@@ -14,10 +14,7 @@ class MockNetworkHandler: NetworkHandlerProtocol {
     ///   - service: network request
     ///   - completionHandler: response callback
     func initiateAPIRequest(service: NetworkService, completionHandler: @escaping APIResponse) {
-        var jsonFileName: String = ""
-        if service is FetchMoviesAPI {
-            jsonFileName = "MockMovies"
-        }
+        let jsonFileName: String = service.serviceType.rawValue
         guard let decodingDataModel = service.decodingType, !jsonFileName.isEmpty else {
             print("Please handle mocking for \(service.baseURL) first.")
             return
@@ -29,14 +26,13 @@ class MockNetworkHandler: NetworkHandlerProtocol {
         if let path = Bundle.main.path(forResource: mockJsonFileName, ofType: "json") {
             do {
                   let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
-                let movieList = try JSONDecoder().decode(decodingType, from: data)
-                completionHandler(movieList, nil)
+                completionHandler(.success(CommonResponseParser.parseResonseData(decodingType: decodingType, data: data)))
               } catch let error {
                    // handle error
-                  completionHandler(nil, error)
+                  completionHandler(.failure(error))
               }
         } else {
-            completionHandler(nil, NSError(domain: "AppTest", code: 0, userInfo: [NSLocalizedDescriptionKey: "JSON File \(mockJsonFileName) not found"]))
+            completionHandler(.failure(NSError(domain: "AppTest", code: 0, userInfo: [NSLocalizedDescriptionKey: "JSON File \(mockJsonFileName) not found"])))
         }
     }
 }

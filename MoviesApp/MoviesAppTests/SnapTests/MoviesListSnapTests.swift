@@ -6,6 +6,7 @@
 //
 import SnapshotTesting
 import XCTest
+import SwiftUI
 @testable import MoviesApp
 @testable import Kingfisher
 
@@ -27,16 +28,44 @@ final class MoviesListSnapTests: XCTestCase {
         KingfisherManager.shared.defaultOptions = []
     }
     
-    func testMyViewControllerSnapShot() {
-        let vc = UIStoryboard(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: String(describing: MoviesListViewController.self))
-        vc.loadViewIfNeeded()
+    func testMovieItemView() {
+        // Given
+        let movieDataModel = MovieDisplayableModel(title: "Avengers", description: "One of Marvels Production movies", rating: "9", year: "2007", imageURLString: imageTestURL, accessibilityDetails: MovieCellAccessibilityInfo(ratingLabelAccessValue: "", releaseDateLabelAccessValue: "", movieNameLabelAccessibilityIdentifier: "", movieSummaryLabelAccessibilityIdentifier: "", ratingLabelAccessibilityIdentifier: "", releaseDateLabelAccessibilityIdentifier: "", movieThumbnailImageAccessibilityIdentifier: ""))
         
+        // When
+        let movieItemView = MovieItemView(movieInfo: movieDataModel)
+        let hostController = UIHostingController(rootView: movieItemView)
+        hostController.view.frame = UIScreen.main.bounds
+        let hostControllerView: UIView = hostController.view
+        
+        // Then
         assertSnapshot(
-            matching: vc,
+            matching: hostControllerView,
             as: .image,
-            named: "MoviesListViewController",
-            testName: "MoviesListViewController"
+            named: "MovieItemView",
+            testName: "MovieItemView"
         )
     }
+    
+    func testMovieListView() {
+        // Given
+        let getMoviesviewModel = GetMoviesViewModel(repository: FetchMoviesRepository.makeRepository())
+        
+        // When
+        let movieListView = MovieListView(viewModel: getMoviesviewModel)
+        let hostController = UIHostingController(rootView: movieListView)
+        hostController.view.frame = UIScreen.main.bounds
+        let hostControllerView: UIView = hostController.view
+        
+        // Then
+            assertSnapshot(
+                matching: hostControllerView,
+                as: .image,
+                named: "MovieListView",
+                testName: "MovieListView"
+            )
+        
+    }
+        
 
 }

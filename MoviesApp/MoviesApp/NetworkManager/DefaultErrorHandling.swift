@@ -8,21 +8,23 @@
 import Foundation
 import MoviesUIKit
 
-typealias DefaultErrorHandlingParams = (data: Data?, response: URLResponse?, error: Error?)
-
-
 class DefaultErrorHandling {
     
-    static func handleData(responseInfo :DefaultErrorHandlingParams) {
-        if let dataInfo = responseInfo.data {
-            do {
-                // make sure this JSON is in the format we expect
-                if let json = try JSONSerialization.jsonObject(with: dataInfo, options: []) as? [String: Any] {
-                    CommonAppAlertController.showAlert(message: (json["message"] as? String) ?? "")
-                }
-            } catch let error as NSError {
-                print("Failed to load: \(error.localizedDescription)")
+    static func handleData(responseInfo: NetworkCallBackParams) {
+        let errorMessage = Self.getErrorMessage(for: responseInfo.data)
+        CommonAppAlertController.showAlert(message: errorMessage)
+    }
+    
+    static func getErrorMessage(for data: Data?) -> String {
+        var errorMessage: String = ""
+        do {
+            // make sure this JSON is in the format we expect
+            if let responseData = data, let json = try JSONSerialization.jsonObject(with: responseData, options: []) as? [String: Any] {
+                errorMessage = json["message"] as? String ?? ""
             }
+        } catch let error as NSError {
+            errorMessage = error.localizedDescription
         }
+        return errorMessage
     }
 }

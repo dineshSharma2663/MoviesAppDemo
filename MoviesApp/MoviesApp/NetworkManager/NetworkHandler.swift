@@ -15,7 +15,7 @@ class NetworkHandler: NetworkHandlerProtocol {
     ///   - completionHandler: completion handler for the service request made
     func initiateAPIRequest(service: NetworkService, completionHandler: @escaping APIResponse) {
         guard let url = service.url else {
-            completionHandler(nil, DataError.invalidURL)
+            completionHandler(.failure(NetworkClientError.invalidURL))
             return
         }
         var request = URLRequest(url: url)
@@ -25,31 +25,8 @@ class NetworkHandler: NetworkHandlerProtocol {
         }
         request.allHTTPHeaderFields = service.headers
         let session = URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let response = response as? HTTPURLResponse,
-                  200 ... 299 ~= response.statusCode else {
-                
-                DispatchQueue.main.async {
-                    DefaultErrorHandling.handleData(responseInfo: (data: data, response: response, error: error))
-                    completionHandler(nil, DataError.invalidResponse)
-                }
-                return
-            }
+            NetworkResponseHandler.handleResponse(service: service, responseInfo: (data: data, response: response, error: error), completionHandler: completionHandler)
             
-            guard let data, error == nil else {
-                DispatchQueue.main.async {
-                    completionHandler(nil, DataError.invalidData)
-                }
-                return
-            }
-            DispatchQueue.main.async {
-                var finalResponse: Any?
-                if let decodingTypeIf = service.decodingType {
-                    finalResponse = CommonResponseHandler.parseResonseData(decodingType: decodingTypeIf, data: data)
-                } else if let responseHandler = service.responseHandler {
-                    finalResponse = responseHandler.parseResonseData(data: data)
-                }
-                completionHandler(finalResponse, nil)
-            }
         }
         session.resume()
     }
